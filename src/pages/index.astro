@@ -24,11 +24,7 @@ import Layout from "../layouts/Layout.astro";
     </p>
   </section>
   <section>
-    <form
-      action="https://postal.hackclub.com/subscribe"
-      method="POST"
-      accept-charset="utf-8"
-    >
+    <form id="rsvpForm">
       <label for="name">Name</label><br />
       <input
         type="text"
@@ -61,6 +57,35 @@ import Layout from "../layouts/Layout.astro";
       <input type="hidden" name="subform" value="yes" />
       <button id="subscribe" type="submit">Subscribe</button>
     </form>
+    <script>
+      document.getElementById('rsvpForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        const data = {};
+        formData.forEach((value, key) => (data[key] = value));
+
+        try {
+          const response = await fetch('/api/submit-rsvp', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          });
+          const result = await response.json();
+          if (response.ok) {
+            // Handle successful submission, e.g., show confirmation message
+            alert('Subscription successful!');
+          } else {
+            // Handle error, e.g., show error message
+            alert('Subscription failed: ' + result.error);
+          }
+        } catch (error) {
+          console.error('Fetch error:', error);
+          alert('An error occurred while submitting the form.');
+        }
+      });
+    </script>
   </section>
   <section>
     <h3>Want to be a supporter?</h3>
